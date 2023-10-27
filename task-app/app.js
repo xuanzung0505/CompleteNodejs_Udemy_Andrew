@@ -1,5 +1,16 @@
 const { MongoClient, ObjectId } = require("mongodb");
+const express = require("express");
+const router = require("./router");
 
+//setup express
+const port = process.env.PORT || 3000;
+const app = express();
+app.use((req, res, next) => {
+  console.log(req.method);
+  next();
+});
+
+//setup mongo
 const connectionURL = "mongodb://127.0.0.1:27017";
 const dbName = "task-app";
 
@@ -8,6 +19,10 @@ const client = new MongoClient(connectionURL, {
   useUnifiedTopology: true,
 });
 
+//middleware
+app.use(router);
+
+//connect to DB
 (function connect() {
   client.connect((error, client) => {
     if (error) {
@@ -61,6 +76,11 @@ async function run() {
     });
 }
 
-run().catch((err) => {
-  console.log(err);
+// run().catch((err) => {
+//   console.log(err);
+// });
+
+//run APP
+app.listen(port, () => {
+  console.log("Listening");
 });
